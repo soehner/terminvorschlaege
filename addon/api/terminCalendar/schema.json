@@ -1,0 +1,150 @@
+[
+  {
+    "namespace": "terminCalendar",
+    "description": "Minimaler Zugriff auf den Thunderbird-Kalender (Lightning) für das Add-on Terminvorschläge.",
+    "functions": [
+      {
+        "name": "getCalendars",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "getBusy",
+        "type": "function",
+        "async": true,
+        "description": "Liefert belegte Zeiträume (ms seit Epoch) aus den angegebenen Kalendern.",
+        "parameters": [
+          {
+            "name": "query",
+            "type": "object",
+            "properties": {
+              "calendarIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "start": {
+                "type": "number"
+              },
+              "end": {
+                "type": "number"
+              },
+              "allDayBusy": {
+                "type": "boolean",
+                "optional": true
+              },
+              "tentativeBusy": {
+                "type": "boolean",
+                "optional": true
+              },
+              "ignoreDeclined": {
+                "type": "boolean",
+                "optional": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "createEvent",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "name": "updateEvent",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "eventId",
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "name": "deleteEvent",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "eventId",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "getEvent",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "calendarId",
+            "type": "string"
+          },
+          {
+            "name": "eventId",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "findEvent",
+        "type": "function",
+        "async": true,
+        "description": "Sucht einen Termin in allen Kalendern.",
+        "parameters": [
+          {
+            "name": "eventId",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onItemDeleted",
+        "type": "function",
+        "description": "Ein Termin wurde aus einem Kalender gelöscht.",
+        "parameters": [
+          {
+            "name": "info",
+            "type": "object",
+            "additionalProperties": {
+              "type": "any"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

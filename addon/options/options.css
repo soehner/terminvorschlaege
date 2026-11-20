@@ -1,0 +1,30 @@
+main { max-width: 980px; margin: 0 auto; padding: 18px 24px 60px; }
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 0; background: var(--bg); padding: 10px 0; z-index: 2;
+  border-bottom: 1px solid var(--border);
+}
+header h1 { margin: 0; font-size: 18px; }
+header div { display: flex; gap: 10px; align-items: center; }
+nav { display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0 4px; }
+section { border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+section > label.inline { margin: 6px 0; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0; }
+.row.wide label { flex: 1 1 300px; }
+.checklist { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+.weekgrid { display: grid; grid-template-columns: 110px 1fr; gap: 6px 10px; align-items: center; max-width: 520px; }
+.weekgrid span { color: var(--fg); }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th, td { text-align: left; border-bottom: 1px solid var(--border); padding: 6px; vertical-align: top; }
+td ul { margin: 0; padding-left: 16px; }
+td li.gone { opacity: .5; text-decoration: line-through; }
+td li.chosen { font-weight: 600; }
+td button { padding: 3px 8px; font-size: 12px; margin: 0 4px 4px 0; }
+code { font-size: 12px; }
+dialog { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--fg); max-width: 460px; padding: 18px 20px; }
+dialog::backdrop { background: rgba(0,0,0,.35); }
+dialog h2 { margin-top: 0; }
+dialog label { margin: 8px 0; }
+.dlgbuttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+button.danger.solid, .dlgbuttons button.danger { background: var(--err); color: #fff; }

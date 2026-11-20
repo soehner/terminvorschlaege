@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Terminvorschläge – Einstellungen</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Terminvorschläge – Einstellungen</h1>
+    <div>
+      <span id="saveStatus" class="status"></span>
+      <button type="button" id="save">Speichern</button>
+    </div>
+  </header>
+
+  <nav>
+    <a href="#kalender">Kalender</a>
+    <a href="#zeiten">Zeiten</a>
+    <a href="#texte">Texte</a>
+    <a href="#automatik">Automatik</a>
+    <a href="#absage">Absage</a>
+    <a href="#video">Video</a>
+    <a href="#vorschlaege">Offene Vorschläge</a>
+  </nav>
+
+  <section id="kalender">
+    <h2>Kalender</h2>
+    <p class="hint">Welche Kalender werden auf belegte Zeiten geprüft? (keine Auswahl = alle aktivierten)</p>
+    <div id="busyCalendars" class="checklist"></div>
+    <div class="row">
+      <label>Reservierungen standardmäßig eintragen in (im Popup pro Mail änderbar)
+        <select id="reserveCalendarId" data-key="reserveCalendarId"></select>
+      </label>
+    </div>
+    <label class="inline"><input type="checkbox" data-key="allDayBusy"> Ganztägige Termine blockieren (z. B. Urlaub)</label>
+    <label class="inline"><input type="checkbox" data-key="tentativeBusy"> Vorläufige Termine blockieren</label>
+    <label class="inline"><input type="checkbox" data-key="ignoreDeclined"> Abgelehnte Einladungen ignorieren</label>
+  </section>
+
+  <section id="zeiten">
+    <h2>Verfügbare Zeiten</h2>
+    <p class="hint">Format: <code>09:00-12:00, 13:00-17:00</code> – leer = kein Termin an diesem Tag.</p>
+    <div id="workHours" class="weekgrid"></div>
+    <div class="row">
+      <label>Ausgeschlossene Tage
+        <input type="text" data-key="excludedDates" placeholder="2026-12-24, 2026-12-27..2027-01-06" size="40">
+      </label>
+    </div>
+    <div class="row">
+      <label>Standard-Dauer (Min.)<input type="number" data-key="durationMin" min="5" step="5"></label>
+      <label>Puffer vor/nach (Min.)<input type="number" data-key="bufferMin" min="0" step="5"></label>
+      <label>Raster (Min.)<input type="number" data-key="stepMin" min="5" step="5"></label>
+      <label>Vorlauf (Std.)<input type="number" data-key="leadHours" min="0"></label>
+    </div>
+    <div class="row">
+      <label>Zeitraum (Tage)<input type="number" data-key="horizonDays" min="1"></label>
+      <label>Anzahl Vorschläge<input type="number" data-key="defaultCount" min="1" max="20"></label>
+      <label>Max. Vorschläge pro Tag<input type="number" data-key="maxPerDay" min="1"></label>
+      <label>Auswahl
+        <select data-key="strategy">
+          <option value="weekdays">verteilt, verschiedene Wochentage</option>
+          <option value="spread">nur gleichmäßig verteilt</option>
+          <option value="earliest">früheste zuerst</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section id="texte">
+    <h2>Texte &amp; Formate</h2>
+    <p class="hint">Platzhalter: <code>{wochentag}</code> <code>{wt}</code> <code>{datum}</code> <code>{von}</code> <code>{bis}</code> <code>{dauer}</code> · <code>{betreff}</code> <code>{name}</code> <code>{termin}</code> <code>{id}</code> <code>{nr}</code> <code>{url}</code> <code>{videoBlock}</code></p>
+    <div class="row wide">
+      <label>Format eines Vorschlags<input type="text" data-key="slotFormat"></label>
+    </div>
+    <div class="row wide">
+      <label>Einleitung<input type="text" data-key="introText"></label>
+      <label>Abschluss<input type="text" data-key="outroText"></label>
+    </div>
+    <div class="row wide">
+      <label>Link-Text<input type="text" data-key="linkText"></label>
+    </div>
+    <div class="row wide">
+      <label>Titel der Reservierung<input type="text" data-key="reserveTitle"></label>
+      <label>Titel nach Bestätigung<input type="text" data-key="confirmedTitle"></label>
+    </div>
+    <p class="hint" id="preview"></p>
+  </section>
+
+  <section id="automatik">
+    <h2>Bestätigungslink &amp; Automatik</h2>
+    <div class="row">
+      <label>Link-Art
+        <select data-key="linkMode">
+          <option value="mailto">E-Mail-Link (mailto) – funktioniert ohne Server</option>
+          <option value="url">Web-Link (eigener Dienst)</option>
+        </select>
+      </label>
+      <label data-show="linkMode=mailto">Bestätigungen an (leer = Absenderadresse)
+        <input type="email" data-key="confirmAddress" size="30">
+      </label>
+      <label data-show="linkMode=url">URL-Vorlage (<code>{token}</code> = TV-id-nr)
+        <input type="url" data-key="linkUrlTemplate" size="40">
+      </label>
+    </div>
+    <div class="row wide" data-show="linkMode=mailto">
+      <label>Betreff der Bestätigungs-Mail (muss <code>[TV-{id}-{nr}]</code> enthalten)<input type="text" data-key="confirmSubject"></label>
+      <label>Text der Bestätigungs-Mail<input type="text" data-key="confirmBody"></label>
+    </div>
+    <p class="hint" data-show="linkMode=url">Der Web-Dienst muss eine E-Mail mit dem Betreff-Token <code>[TV-id-nr]</code> an Sie senden – dann greift dieselbe Automatik.</p>
+
+    <label class="inline"><input type="checkbox" data-key="autoConfirm"> Eingehende Bestätigungen automatisch verarbeiten</label>
+    <label class="inline"><input type="checkbox" data-key="checkSender"> Nur Bestätigungen von ursprünglichen Empfängern akzeptieren</label>
+    <label class="inline"><input type="checkbox" data-key="addTokenToSubject"> Kennung <code>[TV-…]</code> an Betreff der Vorschlags-Mail anhängen (erleichtert Zuordnung von Antworten)</label>
+    <label class="inline"><input type="checkbox" data-key="cancelIfNotSent"> Reservierungen löschen, wenn die Mail ungesendet verworfen wird</label>
+    <label class="inline"><input type="checkbox" data-key="addAttendees"> Gegenüber als Teilnehmer im Kalendereintrag speichern (Achtung: manche CalDAV-Server versenden dann selbst Einladungen)</label>
+    <label class="inline"><input type="checkbox" data-key="notify"> Desktop-Benachrichtigungen</label>
+    <div class="row">
+      <label>Reservierungen verfallen nach (Tage, 0 = nie)<input type="number" data-key="expiryDays" min="0"></label>
+      <label>Nach Bestätigung
+        <select data-key="sendConfirmation">
+          <option value="send">Bestätigung automatisch senden</option>
+          <option value="draft">Bestätigung als Entwurf öffnen</option>
+          <option value="none">keine Mail senden</option>
+        </select>
+      </label>
+    </div>
+    <label class="inline"><input type="checkbox" data-key="attachIcs"> Kalendereinladung (.ics) anhängen</label>
+    <div class="row wide">
+      <label>Betreff der Terminbestätigung<input type="text" data-key="confirmationMailSubject"></label>
+    </div>
+    <div class="row wide">
+      <label>Text der Terminbestätigung<textarea data-key="confirmationMailBody" rows="6"></textarea></label>
+    </div>
+  </section>
+
+  <section id="absage">
+    <h2>Absage bestätigter Termine</h2>
+    <p class="hint">Zusätzliche Platzhalter: <code>{grund}</code>, <code>{grundBlock}</code> (Grund mit Leerzeile davor) und <code>{neueTermine}</code> (Stelle für neue Vorschläge)</p>
+    <div class="row">
+      <label>Absage-Mail
+        <select data-key="cancelSend">
+          <option value="draft">zur Kontrolle öffnen</option>
+          <option value="send">sofort senden</option>
+        </select>
+      </label>
+      <label>Bestätigten Termin im Kalender gelöscht
+        <select data-key="calendarDeleteAction">
+          <option value="draft">Absage-Mail automatisch zur Kontrolle öffnen</option>
+          <option value="send">Absage-Mail automatisch senden</option>
+          <option value="none">nichts tun</option>
+        </select>
+      </label>
+    </div>
+    <label class="inline"><input type="checkbox" data-key="cancelNewProposals"> Standardmäßig neue Terminvorschläge mitschicken</label>
+    <div class="row wide">
+      <label>Betreff der Absage<input type="text" data-key="cancelMailSubject"></label>
+    </div>
+    <div class="row wide">
+      <label>Text der Absage<textarea data-key="cancelMailBody" rows="6"></textarea></label>
+    </div>
+  </section>
+
+  <section id="video">
+    <h2>Videokonferenz</h2>
+    <div class="row">
+      <label>Anbieter
+        <select data-key="videoProvider">
+          <option value="none">kein Videolink</option>
+          <option value="static">fester Link (persönlicher Raum, Greenlight-Raum, Teams-Raum …)</option>
+          <option value="jitsi">Jitsi Meet (neuer Raum je Termin)</option>
+          <option value="bbb">BigBlueButton (API, neues Meeting je Termin)</option>
+          <option value="teams">Microsoft Teams (Microsoft Graph)</option>
+          <option value="zoom">Zoom (Server-to-Server OAuth)</option>
+          <option value="webhook">Webhook (n8n, Power Automate, eigener Dienst)</option>
+        </select>
+      </label>
+    </div>
+    <div class="row wide">
+      <label>Text in der Bestätigung<input type="text" data-key="videoText"></label>
+    </div>
+
+    <div class="provider" data-show="videoProvider=static">
+      <label>Link<input type="url" data-key="videoStaticUrl" size="50"></label>
+    </div>
+    <div class="provider row" data-show="videoProvider=jitsi">
+      <label>Server<input type="url" data-key="jitsiBaseUrl" size="35"></label>
+      <label>Raum-Präfix<input type="text" data-key="jitsiPrefix"></label>
+    </div>
+    <div class="provider" data-show="videoProvider=bbb">
+      <div class="row">
+        <label>API-URL<input type="url" data-key="bbbUrl" size="40" placeholder="https://bbb.example.org/bigbluebutton/"></label>
+        <label>Shared Secret<input type="password" data-key="bbbSecret" size="30"></label>
+        <label>Ihr Anzeigename<input type="text" data-key="bbbModeratorName"></label>
+      </div>
+      <p class="hint">Secret auf dem Server: <code>bbb-conf --secret</code>. Das Meeting wird bei der Bestätigung angelegt und 15 Minuten vor Beginn erneut angelegt (Thunderbird muss dann laufen). Der Moderator-Link steht im Kalendereintrag.</p>
+    </div>
+    <div class="provider" data-show="videoProvider=teams">
+      <div class="row">
+        <label>Client-ID (Azure App)<input type="text" data-key="teamsClientId" size="38"></label>
+        <label>Tenant<input type="text" data-key="teamsTenant" placeholder="common oder Tenant-ID"></label>
+      </div>
+      <p class="hint">Entra ID → App-Registrierung → Plattform „Web“, Umleitungs-URI: <code id="redirectUrl"></code>, „Zugriffstoken (implizit)“ aktivieren, delegierte Berechtigung <code>OnlineMeetings.ReadWrite</code>.</p>
+    </div>
+    <div class="provider" data-show="videoProvider=zoom">
+      <div class="row">
+        <label>Account-ID<input type="text" data-key="zoomAccountId"></label>
+        <label>Client-ID<input type="text" data-key="zoomClientId"></label>
+        <label>Client-Secret<input type="password" data-key="zoomClientSecret"></label>
+      </div>
+      <p class="hint">Zoom Marketplace → „Server-to-Server OAuth App“ mit Scope <code>meeting:write:meeting</code>.</p>
+    </div>
+    <div class="provider" data-show="videoProvider=webhook">
+      <div class="row">
+        <label>URL<input type="url" data-key="webhookUrl" size="45"></label>
+        <label>Zusätzlicher Header<input type="text" data-key="webhookAuthHeader" placeholder="Authorization: Bearer …" size="30"></label>
+      </div>
+      <p class="hint">POST mit JSON <code>{title, start, end, durationMin, organizer, attendees, proposalId}</code>. Antwort: JSON <code>{"url": "…", "moderatorUrl": "…", "info": "…"}</code> oder nur die URL als Text.</p>
+    </div>
+    <p><button type="button" id="testVideo" class="secondary">Speichern &amp; Testlink erzeugen</button> <span id="videoStatus" class="status"></span></p>
+  </section>
+
+  <section id="vorschlaege">
+    <h2>Terminvorschläge</h2>
+    <p><button type="button" id="refresh" class="secondary">Aktualisieren</button></p>
+    <table id="proposals">
+      <thead><tr><th>Erstellt</th><th>Titel</th><th>Empfänger</th><th>Termine</th><th>Status</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+<dialog id="withdrawDialog">
+  <form method="dialog">
+    <h2>Termin absagen</h2>
+    <p id="wdInfo"></p>
+    <label>Grund (optional, erscheint in der Mail)
+      <textarea id="wdReason" rows="3"></textarea>
+    </label>
+    <label class="inline"><input type="checkbox" id="wdNew"> Neue Terminvorschläge mitschicken</label>
+    <label class="inline"><input type="radio" name="wdMode" value="draft"> Absage-Mail zur Kontrolle öffnen</label>
+    <label class="inline"><input type="radio" name="wdMode" value="send"> Absage-Mail sofort senden</label>
+    <p class="hint">Der Termin wird aus Ihrem Kalender gelöscht. Das Gegenüber erhält eine Kalender-Absage (.ics), mit der der Termin auch dort entfernt wird.</p>
+    <div class="dlgbuttons">
+      <button value="cancel" class="secondary">Abbrechen</button>
+      <button value="ok" id="wdOk" class="danger">Termin absagen</button>
+    </div>
+  </form>
+</dialog>
+<script src="../lib/defaults.js"></script>
+<script src="../lib/util.js"></script>
+<script src="../lib/video.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

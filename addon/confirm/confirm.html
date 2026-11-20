@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../options/common.css">
+  <style>
+    body { width: 400px; padding: 14px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 5px; }
+    li.gone { opacity: .5; }
+    .buttons { display: flex; justify-content: space-between; gap: 8px; }
+    #withdraw { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+    textarea { width: 100%; box-sizing: border-box; }
+    #done { border: 1px solid var(--ok); border-left-width: 5px; border-radius: 6px; padding: 8px 10px; margin: 8px 0 12px; }
+    #done strong { color: var(--ok); font-size: 14px; display: block; margin-bottom: 3px; }
+    #done div { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <h1 id="title">Terminvorschlag bestätigen</h1>
+  <div id="done" hidden>
+    <strong>✓ Bereits bestätigt</strong>
+    <span id="doneSlot"></span>
+    <div id="doneMeta"></div>
+  </div>
+  <div id="info" class="hint"></div>
+  <ul id="slots"></ul>
+  <div class="buttons">
+    <button type="button" id="cancel" class="danger">Alle Reservierungen löschen</button>
+    <button type="button" id="confirm" disabled>Bestätigen</button>
+  </div>
+  <div id="withdraw" hidden>
+    <label>Grund (optional)
+      <textarea id="wdReason" rows="2"></textarea>
+    </label>
+    <label class="inline"><input type="checkbox" id="wdNew"> Neue Terminvorschläge mitschicken</label>
+    <div class="buttons"><span></span><button type="button" id="wdBtn" class="danger">Termin absagen</button></div>
+  </div>
+  <div id="status" class="status"></div>
+  <script src="confirm.js"></script>
+</body>
+</html>

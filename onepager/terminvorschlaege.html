@@ -1,0 +1,313 @@
+<title>Terminvorschläge für Thunderbird</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Kalender-Raster als Leitmotiv – Hero mit Mail + Wochenansicht, darunter Ablauf, Funktionen, Eckdaten, Abschluss */
+:root {
+  --bg: #f5f6fa;
+  --surface: #ffffff;
+  --ink: #141b33;
+  --muted: #5a6280;
+  --line: #dde1ec;
+  --accent: #2b50e8;
+  --accent-soft: #e4e9ff;
+  --tentative: #c98a12;
+  --tentative-soft: #fbf0d9;
+  --ok: #17865a;
+  --ok-soft: #dcf3e8;
+  --hero-bg: #141b33;
+  --hero-fg: #f5f6fa;
+  --hero-muted: #aeb6d3;
+  --font-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1222; --surface: #171c30; --ink: #eceff8; --muted: #9aa3c2; --line: #2a3150;
+    --accent: #7d97ff; --accent-soft: #212a52; --tentative: #e8ad3f; --tentative-soft: #3a2f17;
+    --ok: #4fcf95; --ok-soft: #173a2c; --hero-bg: #080b17; --hero-fg: #eceff8; --hero-muted: #9aa3c2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1222; --surface: #171c30; --ink: #eceff8; --muted: #9aa3c2; --line: #2a3150;
+  --accent: #7d97ff; --accent-soft: #212a52; --tentative: #e8ad3f; --tentative-soft: #3a2f17;
+  --ok: #4fcf95; --ok-soft: #173a2c; --hero-bg: #080b17; --hero-fg: #eceff8; --hero-muted: #9aa3c2;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--font-body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+
+/* ---------- Hero ---------- */
+.hero { background: var(--hero-bg); color: var(--hero-fg); margin-top: calc(-1 * env(safe-area-inset-top, 0px)); padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem); padding-bottom: 4rem; }
+.hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 3rem; align-items: center; }
+.hero .eyebrow { color: var(--hero-muted); }
+.hero h1 { font-size: clamp(2.4rem, 5.4vw, 4.1rem); font-weight: 800; line-height: 1.02; margin-top: 1rem; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lead { color: var(--hero-muted); font-size: 1.15rem; margin-top: 1.25rem; max-width: 34rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.75rem; }
+.chip { font: 500 12.5px/1 var(--font-mono); padding: .55rem .75rem; border: 1px solid rgba(174,182,211,.35); border-radius: 999px; color: var(--hero-fg); }
+
+/* Mail-Ausschnitt */
+.stage { display: grid; gap: 1rem; min-width: 0; }
+.mail { background: var(--surface); color: var(--ink); border-radius: 14px; padding: 1.25rem 1.4rem; box-shadow: 0 24px 60px -24px rgba(0,0,0,.55); min-width: 0; }
+.mail-head { display: grid; grid-template-columns: auto 1fr; gap: .2rem .8rem; font-size: 13px; color: var(--muted); padding-bottom: .8rem; border-bottom: 1px solid var(--line); }
+.mail-head b { color: var(--ink); font-weight: 600; }
+.mail-body { padding-top: .9rem; font-size: 14.5px; }
+.mail-body ul { list-style: none; padding: 0; margin: .7rem 0; display: grid; gap: .45rem; }
+.mail-body li { display: flex; flex-wrap: wrap; gap: .25rem .6rem; align-items: baseline; }
+.mail-body li::before { content: "•"; color: var(--accent); font-weight: 700; }
+.mail-body a { color: var(--accent); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+.tag { font: 500 11.5px/1 var(--font-mono); color: var(--muted); }
+
+/* Wochenansicht */
+.week { background: var(--surface); color: var(--ink); border-radius: 14px; padding: 1rem 1.1rem 1.1rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .45rem; min-width: 0; }
+.day { display: grid; gap: .35rem; align-content: start; min-width: 0; }
+.day h4 { margin: 0 0 .15rem; font: 600 11.5px/1.2 var(--font-mono); color: var(--muted); letter-spacing: .04em; }
+.ev { border-radius: 6px; padding: .35rem .4rem; font-size: 11px; line-height: 1.25; min-height: 2.2rem; overflow-wrap: anywhere; }
+.ev.busy { background: var(--accent-soft); color: var(--ink); }
+.ev.res { background: repeating-linear-gradient(135deg, var(--tentative-soft) 0 6px, transparent 6px 11px); border: 1.5px dashed var(--tentative); color: var(--ink); }
+.ev.ok { background: var(--ok-soft); border: 1.5px solid var(--ok); color: var(--ink); font-weight: 600; }
+.ev.gone { border: 1.5px dashed var(--line); color: var(--muted); text-decoration: line-through; }
+.ev.free { min-height: 2.2rem; }
+.legend { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .4rem; font-size: 11.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.legend i { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+.legend .l-res { background: repeating-linear-gradient(135deg, var(--tentative-soft) 0 3px, transparent 3px 6px); border: 1px dashed var(--tentative); }
+.legend .l-ok { background: var(--ok-soft); border: 1px solid var(--ok); }
+.legend .l-gone { border: 1px dashed var(--muted); }
+
+/* ---------- Abschnitte ---------- */
+section { padding-block: 4rem; }
+.section-head { display: grid; gap: .8rem; max-width: 44rem; margin-bottom: 2.25rem; }
+.section-head h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 700; line-height: 1.1; }
+.section-head p { color: var(--muted); font-size: 1.05rem; }
+
+/* Problem */
+.pain { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
+.pingpong { display: grid; gap: .55rem; font-size: 14.5px; }
+.pp { padding: .7rem .9rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); max-width: 85%; }
+.pp.them { justify-self: end; background: var(--accent-soft); border-color: transparent; }
+.pp small { display: block; font: 500 11px/1.4 var(--font-mono); color: var(--muted); margin-bottom: .15rem; }
+.pain-text { display: grid; gap: 1rem; font-size: 1.05rem; }
+.pain-text strong { color: var(--ink); }
+.pain-text p { color: var(--muted); }
+.pain-text .punch { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; line-height: 1.25; color: var(--ink); }
+
+/* Ablauf */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; counter-reset: step; }
+.step { border-top: 3px solid var(--accent); padding-top: 1rem; display: grid; gap: .5rem; align-content: start; }
+.step::before { counter-increment: step; content: "Schritt " counter(step); font: 500 12px/1 var(--font-mono); color: var(--accent); letter-spacing: .08em; text-transform: uppercase; }
+.step h3 { font-size: 1.25rem; font-weight: 700; }
+.step p { color: var(--muted); font-size: 15px; }
+
+/* Funktionen */
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.feature { background: var(--surface); padding: 1.5rem 1.4rem; display: grid; gap: .55rem; align-content: start; }
+.feature h3 { font-size: 1.12rem; font-weight: 700; }
+.feature p { color: var(--muted); font-size: 15px; }
+.feature .tools { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .3rem; }
+.feature .tools span { font: 500 11.5px/1 var(--font-mono); padding: .4rem .55rem; border-radius: 6px; background: var(--accent-soft); color: var(--ink); }
+
+/* Zielgruppen + Eckdaten */
+.split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.5rem; align-items: start; }
+.audience { display: grid; gap: .9rem; }
+.aud { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1rem; padding-bottom: .9rem; border-bottom: 1px solid var(--line); }
+.aud b { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.aud span { color: var(--muted); font-size: 15px; }
+.specs { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.4rem; display: grid; gap: .1rem; }
+.specs h3 { font-size: 1.12rem; margin-bottom: .6rem; }
+.spec { display: grid; grid-template-columns: 8.5rem 1fr; gap: .8rem; padding: .55rem 0; border-top: 1px solid var(--line); font-size: 14.5px; }
+.spec dt { font: 500 12px/1.6 var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.spec dd { margin: 0; }
+
+/* Abschluss */
+.closer { background: var(--hero-bg); color: var(--hero-fg); padding-block: 3.5rem; }
+.closer .wrap { display: flex; flex-wrap: wrap; gap: 1.5rem 3rem; align-items: center; justify-content: space-between; }
+.closer h2 { font-size: clamp(1.7rem, 3.6vw, 2.6rem); font-weight: 800; line-height: 1.08; max-width: 36rem; }
+.closer p { color: var(--hero-muted); max-width: 26rem; font-size: 1.05rem; }
+
+@media (max-width: 860px) {
+  .hero .wrap, .pain, .split { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .features { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 540px) {
+  .steps, .features { grid-template-columns: 1fr; }
+  .week { grid-template-columns: repeat(3, 1fr); }
+  .week .day:nth-child(n+4):not(.legend) { display: none; }
+  .aud, .spec { grid-template-columns: 1fr; gap: .2rem; }
+  .pp { max-width: 100%; }
+}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Add-on für Thunderbird</p>
+      <h1>Terminfindung in <em>einem</em> Klick statt fünf Mails.</h1>
+      <p class="lead">Terminvorschläge liest Ihren Kalender, schlägt passende freie Zeiten vor, hält sie für Sie frei und erledigt nach der Zusage den Rest: Kalendereintrag, Videolink, Einladung und Aufräumen.</p>
+      <div class="chips">
+        <span class="chip">Thunderbird 128+</span>
+        <span class="chip">CalDAV &amp; lokale Kalender</span>
+        <span class="chip">Teams · BigBlueButton · Zoom · Jitsi</span>
+        <span class="chip">Ohne Cloud-Dienst</span>
+      </div>
+    </div>
+
+    <div class="stage" aria-label="Beispiel einer Vorschlags-Mail und der Kalenderwoche">
+      <div class="mail">
+        <div class="mail-head">
+          <span>An</span><b>Anna Berger</b>
+          <span>Betreff</span><b>Abstimmung Projektstart [TV-k7m2p9qa]</b>
+        </div>
+        <div class="mail-body">
+          <p>Ich schlage Ihnen folgende Termine vor:</p>
+          <ul>
+            <li>Montag, 23.11.2026, 09:00 – 10:00 Uhr <a href="#ablauf">Diesen Termin bestätigen</a></li>
+            <li>Mittwoch, 25.11.2026, 13:00 – 14:00 Uhr <a href="#ablauf">Diesen Termin bestätigen</a></li>
+            <li>Freitag, 27.11.2026, 10:30 – 11:30 Uhr <a href="#ablauf">Diesen Termin bestätigen</a></li>
+          </ul>
+          <p class="tag">eingefügt mit einem Klick · im Kalender reserviert</p>
+        </div>
+      </div>
+
+      <div class="week">
+        <div class="day"><h4>Mo 23.</h4><div class="ev gone">Reserviert</div><div class="ev busy">Jour fixe</div></div>
+        <div class="day"><h4>Di 24.</h4><div class="ev busy">Workshop</div><div class="ev busy">Workshop</div></div>
+        <div class="day"><h4>Mi 25.</h4><div class="ev free"></div><div class="ev ok">Projektstart – Anna Berger · Teams</div></div>
+        <div class="day"><h4>Do 26.</h4><div class="ev busy">Kunde Nord</div><div class="ev free"></div></div>
+        <div class="day"><h4>Fr 27.</h4><div class="ev gone">Reserviert</div><div class="ev free"></div></div>
+        <div class="legend">
+          <span><i class="l-res"></i>vorläufig reserviert</span>
+          <span><i class="l-ok"></i>bestätigt</span>
+          <span><i class="l-gone"></i>automatisch freigegeben</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap pain">
+      <div class="pingpong" aria-label="Typischer Mailverlauf ohne Add-on">
+        <div class="pp"><small>Sie · Montag</small>Wann passt es Ihnen nächste Woche?</div>
+        <div class="pp them"><small>Anna Berger · Dienstag</small>Dienstag oder Donnerstag Vormittag?</div>
+        <div class="pp"><small>Sie · Dienstag</small>Da bin ich leider unterwegs. Mittwoch 14 Uhr?</div>
+        <div class="pp them"><small>Anna Berger · Donnerstag</small>Mittwoch ist inzwischen belegt …</div>
+      </div>
+      <div class="pain-text">
+        <p class="eyebrow">Das Problem</p>
+        <p class="punch">Einen Termin zu finden dauert oft länger als der Termin selbst.</p>
+        <p>Freie Zeiten aus dem Kalender abschreiben, auf Antwort warten, inzwischen ist der Slot weg. Danach Eintrag anlegen, Videolink erzeugen, Einladung schicken und die übrigen Optionen wieder freigeben.</p>
+        <p><strong>Terminvorschläge macht daraus einen Ablauf, der von selbst läuft.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="ablauf" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">So funktioniert es</p>
+        <h2>Vom leeren Entwurf zum festen Termin mit Videolink</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <h3>Vorschlagen</h3>
+          <p>Im Verfassen-Fenster auf „Terminvorschläge“ klicken. Das Add-on findet freie Zeiten nach Ihren Arbeitszeiten, mit Puffer und auf verschiedene Wochentage verteilt.</p>
+        </div>
+        <div class="step">
+          <h3>Reservieren</h3>
+          <p>Die Vorschläge werden vorläufig in Ihren Kalender eingetragen und als Liste mit Bestätigungslinks in die Mail eingefügt. Parallele Anfragen überschneiden sich nicht.</p>
+        </div>
+        <div class="step">
+          <h3>Bestätigen lassen</h3>
+          <p>Ihr Gegenüber klickt auf den Wunschtermin und sendet die vorbereitete Antwort. Kein Konto, keine App, kein Webformular.</p>
+        </div>
+        <div class="step">
+          <h3>Fertig</h3>
+          <p>Der Termin wird fest, die anderen Reservierungen verschwinden. Videolink und Kalendereinladung gehen automatisch an Ihr Gegenüber.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Funktionen</p>
+        <h2>Durchdacht bis zur Absage</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <h3>Kennt Ihren Kalender</h3>
+          <p>Berücksichtigt alle gewählten Kalender, Arbeitszeiten je Wochentag, Puffer, Vorlauf, Urlaubs- und Feiertage.</p>
+        </div>
+        <div class="feature">
+          <h3>Hält Zeiten frei</h3>
+          <p>Vorgeschlagene Termine werden sofort reserviert und blockieren weitere Vorschläge. Nicht gewählte Optionen räumt das Add-on selbst wieder auf.</p>
+        </div>
+        <div class="feature">
+          <h3>Bestätigung per Klick</h3>
+          <p>Zusagen werden beim Mailabruf erkannt und automatisch verarbeitet, mit Prüfung des Absenders.</p>
+        </div>
+        <div class="feature">
+          <h3>Videolink inklusive</h3>
+          <p>Zu jedem bestätigten Termin entsteht der passende Zugang, wahlweise als fester Raum oder neu pro Termin.</p>
+          <div class="tools"><span>Microsoft Teams</span><span>BigBlueButton</span><span>Zoom</span><span>Jitsi</span><span>Webhook</span></div>
+        </div>
+        <div class="feature">
+          <h3>Absagen ohne Aufwand</h3>
+          <p>Termin im Kalender löschen, auch auf dem Handy, und die Absage mit Kalender-Absage und neuen Vorschlägen liegt bereit.</p>
+        </div>
+        <div class="feature">
+          <h3>Ihre Daten bleiben bei Ihnen</h3>
+          <p>Alles läuft lokal in Thunderbird. Kein externer Buchungsdienst, keine Termindaten auf fremden Servern.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap split">
+      <div>
+        <div class="section-head" style="margin-bottom:1.5rem">
+          <p class="eyebrow">Für wen</p>
+          <h2>Für alle, die viele Termine mit Externen abstimmen</h2>
+        </div>
+        <div class="audience">
+          <div class="aud"><b>Beratung</b><span>Erstgespräche, Workshops und Audits ohne Mail-Pingpong vereinbaren.</span></div>
+          <div class="aud"><b>Lehre &amp; Schule</b><span>Sprechstunden und Prüfungsgespräche planbar anbieten.</span></div>
+          <div class="aud"><b>Freiberufliche</b><span>Kundentermine professionell anbieten, ohne Buchungsportal.</span></div>
+          <div class="aud"><b>Teams</b><span>Eigene Texte, Kalender und Videoanbieter je Arbeitsplatz einstellen.</span></div>
+        </div>
+      </div>
+      <div class="specs">
+        <h3>Technische Eckdaten</h3>
+        <dl style="margin:0">
+          <div class="spec"><dt>Plattform</dt><dd>Thunderbird ab Version 128, getestet mit 160</dd></div>
+          <div class="spec"><dt>Kalender</dt><dd>CalDAV (z. B. Nextcloud, Baïkal), lokale Kalender, mehrere gleichzeitig</dd></div>
+          <div class="spec"><dt>Bestätigung</dt><dd>E-Mail-Link (mailto), optional eigene Web-Bestätigungsseite</dd></div>
+          <div class="spec"><dt>Einladung</dt><dd>iCalendar-Standard (.ics) für Zusage und Absage, lesbar in Outlook, Apple und Google Kalender</dd></div>
+          <div class="spec"><dt>Video</dt><dd>Teams (Microsoft Graph), BigBlueButton-API, Zoom, Jitsi, fester Link, Webhook</dd></div>
+          <div class="spec"><dt>Sprache</dt><dd>Deutsch, alle Texte und Formate anpassbar</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="closer">
+  <div class="wrap">
+    <h2>Weniger abstimmen, mehr besprechen.</h2>
+    <p>Interesse an einer Vorführung oder einer Testversion? Antworten Sie einfach auf diese Nachricht.</p>
+  </div>
+</footer>
