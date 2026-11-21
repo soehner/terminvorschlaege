@@ -1,0 +1,60 @@
+# Prüft wöchentlich, ob eine neue Thunderbird-Version über strict_max_version hinausgeht,
+# und legt dann ein Issue an (GitHub schickt dazu eine Mail).
+name: Thunderbird-Versionsprüfung
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # montags 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Versionen vergleichen und ggf. Issue anlegen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MAX=$(jq -r '.browser_specific_settings.gecko.strict_max_version' addon/manifest.json)
+          MAX_MAJOR=${MAX%%.*}
+          DATA=$(curl -sf https://product-details.mozilla.org/1.0/thunderbird_versions.json)
+          RELEASE=$(echo "$DATA" | jq -r '.LATEST_THUNDERBIRD_VERSION')
+          BETA=$(echo "$DATA" | jq -r '.LATEST_THUNDERBIRD_DEVEL_VERSION')
+          REL_MAJOR=${RELEASE%%.*}
+          BETA_MAJOR=$(echo "$BETA" | sed 's/[^0-9].*//')
+          echo "strict_max_version=$MAX  Release=$RELEASE  Beta=$BETA"
+
+          open_issue() {
+            local title="$1" body="$2"
+            if gh issue list --state all --search "\"$title\" in:title" --json title -q '.[].title' | grep -qxF "$title"; then
+              echo "Issue existiert bereits: $title"
+            else
+              gh issue create --title "$title" --body "$body"
+              echo "Issue angelegt: $title"
+            fi
+          }
+
+          if [ "$REL_MAJOR" -gt "$MAX_MAJOR" ]; then
+            open_issue "Thunderbird $REL_MAJOR ist erschienen – Add-on ist dort gesperrt" \
+"Thunderbird **$RELEASE** ist als fertige Version erschienen. Das Add-on erlaubt nur bis \`$MAX\` und ist dort deaktiviert.
+
+1. Thunderbird aktualisieren und das Add-on testen (Vorschlag, Bestätigung, Absage).
+2. \`strict_max_version\` in \`addon/manifest.json\` anheben, Version erhöhen, \`./build.sh\`.
+3. Neue Version auf addons.thunderbird.net hochladen."
+          elif [ "$BETA_MAJOR" -gt "$MAX_MAJOR" ]; then
+            open_issue "Thunderbird $BETA_MAJOR Beta verfügbar – vorab testen" \
+"Thunderbird **$BETA** (Beta) ist erschienen. Die fertige Version $BETA_MAJOR folgt in einigen Wochen. Das Add-on erlaubt derzeit nur bis \`$MAX\` und wird dort ohne Anpassung deaktiviert.
+
+1. Thunderbird Beta in einem Testprofil installieren und das Add-on testen.
+2. Wenn alles läuft: \`strict_max_version\` auf \`$BETA_MAJOR.*\` anheben, Version erhöhen, \`./build.sh\`.
+3. Neue Version auf addons.thunderbird.net hochladen, bevor $BETA_MAJOR erscheint."
+          else
+            echo "Alles aktuell."
+          fi
