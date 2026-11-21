@@ -18,7 +18,7 @@ function tvFormatTime(d) {
   return `${tvPad(d.getHours())}:${tvPad(d.getMinutes())}`;
 }
 
-// "Geyer, Matthias" -> "Matthias Geyer"; Anführungszeichen entfernen
+// "Mustermann, Erika" -> "Erika Mustermann"; Anführungszeichen entfernen
 function tvPersonName(name) {
   let n = String(name || "").trim().replace(/^["']+|["']+$/g, "").trim();
   const m = n.match(/^([^,]+),\s*([^,]+)$/);

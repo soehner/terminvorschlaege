@@ -37,7 +37,7 @@ Erzeugt per Knopfdruck im Verfassen-Fenster Terminvorschläge aus den freien Zei
 ## Installation
 
 ```sh
-./build.sh            # erzeugt dist/terminvorschlaege-1.0.0.xpi
+./build.sh            # erzeugt dist/terminvorschlaege-<version>.xpi
 ```
 
 Thunderbird → *Add-ons und Themes* → Zahnrad → *Add-on aus Datei installieren…* → die `.xpi` wählen.
@@ -90,3 +90,7 @@ Danach läuft dieselbe Automatik.
 - Die Automatik läuft nur, solange Thunderbird geöffnet ist. Mails, die währenddessen eintreffen, werden beim nächsten Abruf verarbeitet.
 - Die Bestätigungserkennung liest nur den Betreff. Ändert der Empfänger ihn, hilft die manuelle Bestätigung in der Nachrichtenansicht.
 - Bei Mails mit mehreren Empfängern gewinnt die erste Bestätigung. Spätere führen zu einem Hinweis.
+
+## Lizenz
+
+Mozilla Public License 2.0, siehe [LICENSE](LICENSE).

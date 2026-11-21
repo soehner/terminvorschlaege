@@ -24,6 +24,7 @@
     <a href="#absage">Absage</a>
     <a href="#video">Video</a>
     <a href="#vorschlaege">Offene Vorschläge</a>
+    <a href="#sicherung">Sicherung</a>
   </nav>
 
   <section id="kalender">
@@ -229,6 +230,17 @@
       <thead><tr><th>Erstellt</th><th>Titel</th><th>Empfänger</th><th>Termine</th><th>Status</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
+  </section>
+
+  <section id="sicherung">
+    <h2>Sicherung</h2>
+    <p class="hint">Speichert Einstellungen und Terminvorschläge in einer Datei, z.&nbsp;B. für den Umzug auf einen anderen Rechner. Die Datei enthält auch Zugangsdaten der Videoanbieter. Bitte sicher aufbewahren.</p>
+    <p>
+      <button type="button" id="exportData" class="secondary">Exportieren</button>
+      <button type="button" id="importData" class="secondary">Importieren …</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+      <span id="backupStatus" class="status"></span>
+    </p>
   </section>
 </main>
 

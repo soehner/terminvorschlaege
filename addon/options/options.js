@@ -363,4 +363,64 @@ async function init() {
   });
 }
 
+async function exportData() {
+  const { config: cfg, proposals } = await browser.storage.local.get(["config", "proposals"]);
+  const data = {
+    format: "terminvorschlaege-backup",
+    version: browser.runtime.getManifest().version,
+    exported: new Date().toISOString(),
+    config: cfg || {},
+    proposals: proposals || {},
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `terminvorschlaege-sicherung-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  flash($("backupStatus"), "Sicherung erstellt.", "ok");
+}
+
+async function importData(file) {
+  let data;
+  try {
+    data = JSON.parse(await file.text());
+  } catch (e) {
+    throw new Error("Die Datei ist keine gültige Sicherung.");
+  }
+  if (!data || data.format !== "terminvorschlaege-backup" || typeof data.config !== "object") {
+    throw new Error("Die Datei ist keine Sicherung von Terminvorschläge.");
+  }
+  const { proposals: current = {} } = await browser.storage.local.get("proposals");
+  // Vorhandene Vorschläge bleiben erhalten, gleiche Kennungen werden aus der Sicherung übernommen
+  const proposals = Object.assign({}, current, data.proposals || {});
+  await browser.storage.local.set({ config: data.config, proposals });
+  config = await tvLoadConfig();
+  fillForm();
+  updateVisibility();
+  updatePreview();
+  try {
+    await loadCalendars();
+  } catch (e) {
+    // Kalenderliste ist nur Komfort
+  }
+  await loadProposals();
+  flash($("backupStatus"), `Importiert: Einstellungen und ${Object.keys(data.proposals || {}).length} Vorschläge.`, "ok");
+}
+
+$("exportData").addEventListener("click", () => {
+  exportData().catch(e => flash($("backupStatus"), e.message, "err"));
+});
+$("importData").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", () => {
+  const f = $("importFile").files[0];
+  $("importFile").value = "";
+  if (f) {
+    importData(f).catch(e => flash($("backupStatus"), e.message, "err"));
+  }
+});
+
 init().catch(e => flash($("saveStatus"), e.message, "err"));
