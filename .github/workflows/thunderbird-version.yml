@@ -42,19 +42,19 @@ jobs:
           }
 
           if [ "$REL_MAJOR" -gt "$MAX_MAJOR" ]; then
-            open_issue "Thunderbird $REL_MAJOR ist erschienen – Add-on ist dort gesperrt" \
-"Thunderbird **$RELEASE** ist als fertige Version erschienen. Das Add-on erlaubt nur bis \`$MAX\` und ist dort deaktiviert.
-
-1. Thunderbird aktualisieren und das Add-on testen (Vorschlag, Bestätigung, Absage).
-2. \`strict_max_version\` in \`addon/manifest.json\` anheben, Version erhöhen, \`./build.sh\`.
-3. Neue Version auf addons.thunderbird.net hochladen."
+            BODY=$(printf '%s\n\n%s\n%s\n%s\n' \
+              "Thunderbird **$RELEASE** ist als fertige Version erschienen. Das Add-on erlaubt nur bis \`$MAX\` und ist dort deaktiviert." \
+              "1. Thunderbird aktualisieren und das Add-on testen (Vorschlag, Bestätigung, Absage)." \
+              "2. \`strict_max_version\` in \`addon/manifest.json\` anheben, Version erhöhen, \`./build.sh\`." \
+              "3. Neue Version auf addons.thunderbird.net hochladen.")
+            open_issue "Thunderbird $REL_MAJOR ist erschienen – Add-on ist dort gesperrt" "$BODY"
           elif [ "$BETA_MAJOR" -gt "$MAX_MAJOR" ]; then
-            open_issue "Thunderbird $BETA_MAJOR Beta verfügbar – vorab testen" \
-"Thunderbird **$BETA** (Beta) ist erschienen. Die fertige Version $BETA_MAJOR folgt in einigen Wochen. Das Add-on erlaubt derzeit nur bis \`$MAX\` und wird dort ohne Anpassung deaktiviert.
-
-1. Thunderbird Beta in einem Testprofil installieren und das Add-on testen.
-2. Wenn alles läuft: \`strict_max_version\` auf \`$BETA_MAJOR.*\` anheben, Version erhöhen, \`./build.sh\`.
-3. Neue Version auf addons.thunderbird.net hochladen, bevor $BETA_MAJOR erscheint."
+            BODY=$(printf '%s\n\n%s\n%s\n%s\n' \
+              "Thunderbird **$BETA** (Beta) ist erschienen. Die fertige Version $BETA_MAJOR folgt in einigen Wochen. Das Add-on erlaubt derzeit nur bis \`$MAX\` und wird dort ohne Anpassung deaktiviert." \
+              "1. Thunderbird Beta in einem Testprofil installieren und das Add-on testen." \
+              "2. Wenn alles läuft: \`strict_max_version\` auf \`$BETA_MAJOR.*\` anheben, Version erhöhen, \`./build.sh\`." \
+              "3. Neue Version auf addons.thunderbird.net hochladen, bevor $BETA_MAJOR erscheint.")
+            open_issue "Thunderbird $BETA_MAJOR Beta verfügbar – vorab testen" "$BODY"
           else
             echo "Alles aktuell."
           fi
