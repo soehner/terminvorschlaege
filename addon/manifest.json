@@ -2,14 +2,14 @@
   "manifest_version": 3,
   "name": "Terminvorschläge",
   "description": "Erzeugt aus freien Kalenderzeiten Terminvorschläge in E-Mails, reserviert sie im Kalender und wertet Bestätigungen automatisch aus – inkl. Videokonferenz-Link.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "Jörg Söhner",
   "homepage_url": "https://github.com/soehner/terminvorschlaege",
   "browser_specific_settings": {
     "gecko": {
       "id": "terminvorschlaege@soehner.local",
       "strict_min_version": "128.0",
-      "strict_max_version": "160.*"
+      "strict_max_version": "161.*"
     }
   },
   "icons": {
