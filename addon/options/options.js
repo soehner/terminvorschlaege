@@ -158,7 +158,7 @@ async function loadCalendars() {
   sel.textContent = "";
   const auto = document.createElement("option");
   auto.value = "";
-  auto.textContent = "(Standardkalender)";
+  auto.textContent = "(automatisch: zuletzt verwendeter Kalender)";
   sel.append(auto);
   for (const c of cals) {
     const lab = document.createElement("label");

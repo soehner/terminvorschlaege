@@ -2,14 +2,14 @@
   "manifest_version": 3,
   "name": "Terminvorschläge",
   "description": "Erzeugt aus freien Kalenderzeiten Terminvorschläge in E-Mails, reserviert sie im Kalender und wertet Bestätigungen automatisch aus – inkl. Videokonferenz-Link.",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "author": "Jörg Söhner",
   "homepage_url": "https://github.com/soehner/terminvorschlaege",
   "browser_specific_settings": {
     "gecko": {
       "id": "terminvorschlaege@soehner.local",
       "strict_min_version": "128.0",
-      "strict_max_version": "161.*"
+      "strict_max_version": "162.*"
     }
   },
   "icons": {
@@ -22,6 +22,7 @@
       "lib/util.js",
       "lib/slots.js",
       "lib/ics.js",
+      "lib/calendar.js",
       "lib/video.js",
       "background.js"
     ]
@@ -54,12 +55,29 @@
   ],
   "optional_host_permissions": ["*://*/*"],
   "experiment_apis": {
-    "terminCalendar": {
-      "schema": "api/terminCalendar/schema.json",
+    "calendar_calendars": {
+      "schema": "experiments/calendar/schema/calendar-calendars.json",
       "parent": {
         "scopes": ["addon_parent"],
-        "paths": [["terminCalendar"]],
-        "script": "api/terminCalendar/implementation.js"
+        "script": "experiments/calendar/parent/ext-calendar-calendars.js",
+        "paths": [["calendar", "calendars"]]
+      }
+    },
+    "calendar_items": {
+      "schema": "experiments/calendar/schema/calendar-items.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "experiments/calendar/parent/ext-calendar-items.js",
+        "paths": [["calendar", "items"]]
+      }
+    },
+    "calendar_provider": {
+      "schema": "experiments/calendar/schema/calendar-provider.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "experiments/calendar/parent/ext-calendar-provider.js",
+        "events": ["startup"],
+        "paths": [["calendar", "provider"]]
       }
     }
   }

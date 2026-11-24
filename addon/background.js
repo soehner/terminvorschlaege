@@ -64,19 +64,27 @@ async function busyCalendarIds(cfg) {
   if (cfg.busyCalendarIds && cfg.busyCalendarIds.length) {
     return cfg.busyCalendarIds;
   }
-  const cals = await browser.terminCalendar.getCalendars();
+  const cals = await tvCalendar.getCalendars();
   return cals.filter(c => !c.disabled).map(c => c.id);
 }
 
 async function reserveCalendarId(cfg, override) {
-  const cals = await browser.terminCalendar.getCalendars();
+  const cals = await tvCalendar.getCalendars();
   if (override && cals.some(c => c.id == override && isWritable(c))) {
     return override;
   }
   if (cfg.reserveCalendarId && cals.some(c => c.id == cfg.reserveCalendarId && isWritable(c))) {
     return cfg.reserveCalendarId;
   }
-  const writable = cals.find(c => c.isDefault && isWritable(c)) || cals.find(isWritable);
+  // Die Kalender-API nennt den Standardkalender von Thunderbird nicht. Ersatz: der Kalender
+  // des zuletzt angelegten Vorschlags, sonst der erste beschreibbare Kalender.
+  const last = Object.values(await getProposals())
+    .filter(p => p.calendarId)
+    .sort((a, b) => b.created - a.created)[0];
+  const writable =
+    (last && cals.find(c => c.id == last.calendarId && isWritable(c))) ||
+    cals.find(c => c.isDefault && isWritable(c)) ||
+    cals.find(isWritable);
   if (!writable) {
     throw new Error("Kein beschreibbarer Kalender gefunden.");
   }
@@ -197,7 +205,7 @@ async function computeSlots(req) {
   const now = Date.now();
   const horizon = req.horizonDays || cfg.horizonDays;
   const from = req.from ? new Date(req.from).getTime() : now;
-  const busy = await browser.terminCalendar.getBusy({
+  const busy = await tvCalendar.getBusy({
     calendarIds: await busyCalendarIds(cfg),
     start: Math.min(now, from) - 86400000,
     end: Math.max(now, from) + (horizon + 2) * 86400000,
@@ -267,7 +275,7 @@ async function applyProposal(req) {
       const s = sorted[i];
       const slot = { nr: i + 1, start: s.start, end: s.end };
       const name = recipients[0] ? tvPersonName(recipients[0].name) || recipients[0].email : "";
-      slot.eventId = await browser.terminCalendar.createEvent(calendarId, {
+      slot.eventId = await tvCalendar.createEvent(calendarId, {
         title: tvFill(cfg.reserveTitle, { betreff: title, name, nr: slot.nr, anzahl: total }),
         start: s.start,
         end: s.end,
@@ -285,7 +293,7 @@ async function applyProposal(req) {
   } catch (e) {
     // bereits angelegte Reservierungen zurückrollen
     for (const s of p.slots) {
-      await browser.terminCalendar.deleteEvent(calendarId, s.eventId).catch(() => {});
+      await tvCalendar.deleteEvent(calendarId, s.eventId).catch(() => {});
     }
     throw e;
   }
@@ -305,7 +313,7 @@ async function deleteReservations(p, exceptNr) {
       continue;
     }
     try {
-      await browser.terminCalendar.deleteEvent(p.calendarId, s.eventId);
+      await tvCalendar.deleteEvent(p.calendarId, s.eventId);
     } catch (e) {
       console.warn("Terminvorschläge: Löschen fehlgeschlagen", e);
     }
@@ -343,7 +351,7 @@ async function maintenance() {
       await updateProposal(p.id, async q => {
         for (const s of q.slots) {
           if (!s.deleted && s.start < now) {
-            await browser.terminCalendar.deleteEvent(q.calendarId, s.eventId).catch(() => {});
+            await tvCalendar.deleteEvent(q.calendarId, s.eventId).catch(() => {});
             s.deleted = true;
           }
         }
@@ -354,6 +362,7 @@ async function maintenance() {
       });
     }
   }
+  await checkDeletedConfirmed(all, now);
   // alte, abgeschlossene Einträge nach 90 Tagen entfernen
   await withLock(async () => {
     const list = await getProposals();
@@ -370,6 +379,33 @@ async function maintenance() {
       await browser.storage.local.set({ proposals: list });
     }
   });
+}
+
+/**
+ * Das Lösch-Ereignis des Kalenders kommt nur an, solange der Hintergrund des Add-ons läuft.
+ * Daher wird regelmäßig nachgesehen, ob bestätigte, künftige Termine noch im Kalender stehen.
+ */
+async function checkDeletedConfirmed(all, now) {
+  const confirmed = Object.values(all).filter(p => p.status === "confirmed" && p.confirmed);
+  if (!confirmed.length) {
+    return;
+  }
+  const cals = await tvCalendar.getCalendars();
+  for (const p of confirmed) {
+    const slot = p.slots.find(s => s.nr === p.confirmed.nr);
+    const c = cals.find(x => x.id === p.calendarId);
+    if (!slot || !slot.eventId || slot.end < now || !c || c.disabled) {
+      continue; // vergangen oder Kalender (vorübergehend) nicht verfügbar
+    }
+    const found = await tvCalendar.findEvent(slot.eventId).catch(() => undefined);
+    if (found === null) {
+      await handleCalendarDelete({ id: slot.eventId });
+    } else if (found && found.calendarId && found.calendarId !== p.calendarId) {
+      await updateProposal(p.id, q => {
+        q.calendarId = found.calendarId;
+      });
+    }
+  }
 }
 
 // ------------------------------------------------------------------ Bestätigung
@@ -538,9 +574,9 @@ async function confirmProposal(id, nr, source = {}, manual = false) {
       data.attendees = [attendee];
       data.organizer = { email: p.ownEmail, name: p.ownName };
     }
-    const updated = await browser.terminCalendar.updateEvent(p.calendarId, slot.eventId, data);
+    const updated = await tvCalendar.updateEvent(p.calendarId, slot.eventId, data);
     if (!updated) {
-      slot.eventId = await browser.terminCalendar.createEvent(p.calendarId, data);
+      slot.eventId = await tvCalendar.createEvent(p.calendarId, data);
     }
 
     // 4. Übrige Reservierungen löschen
@@ -622,7 +658,7 @@ async function withdrawConfirmed(id, opt = {}) {
   });
   if (!opt.alreadyDeleted) {
     selfDeleted.add(slot.eventId);
-    await browser.terminCalendar.deleteEvent(p.calendarId, slot.eventId).catch(e => {
+    await tvCalendar.deleteEvent(p.calendarId, slot.eventId).catch(e => {
       console.warn("Terminvorschläge: Termin nicht gelöscht", e);
     });
     setTimeout(() => selfDeleted.delete(slot.eventId), 60000);
@@ -773,7 +809,10 @@ async function handleCalendarDelete(info) {
   // Kurz warten: Verschieben in einen anderen Kalender oder Neuaufbau des Zwischenspeichers
   // erscheinen ebenfalls als "gelöscht", der Termin taucht dann aber gleich wieder auf.
   await new Promise(r => setTimeout(r, 8000));
-  const again = await browser.terminCalendar.findEvent(info.id).catch(() => null);
+  const again = await tvCalendar.findEvent(info.id).catch(() => undefined);
+  if (again === undefined) {
+    return; // ein Kalender war nicht lesbar -> lieber nichts absagen
+  }
   if (again) {
     if (again.calendarId && again.calendarId !== p.calendarId) {
       await updateProposal(p.id, q => {
@@ -878,7 +917,7 @@ browser.messages.onNewMailReceived.addListener(async (folder, messageList) => {
   }
 });
 
-browser.terminCalendar.onItemDeleted.addListener(info => {
+tvCalendar.onItemDeleted.addListener(info => {
   handleCalendarDelete(info).catch(e => console.error("Terminvorschläge:", e));
 });
 
@@ -989,10 +1028,10 @@ browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, displayed) =>
 });
 
 browser.runtime.onInstalled.addListener(() => {
-  browser.alarms.create("tv-maintenance", { periodInMinutes: 60, delayInMinutes: 1 });
+  browser.alarms.create("tv-maintenance", { periodInMinutes: 15, delayInMinutes: 1 });
 });
 browser.runtime.onStartup.addListener(() => {
-  browser.alarms.create("tv-maintenance", { periodInMinutes: 60, delayInMinutes: 2 });
+  browser.alarms.create("tv-maintenance", { periodInMinutes: 15, delayInMinutes: 2 });
 });
 
 // ------------------------------------------------------------------ Nachrichten von Popup/Optionen
@@ -1000,7 +1039,7 @@ const handlers = {
   async getContext({ tabId }) {
     const cfg = await tvLoadConfig();
     const details = await browser.compose.getComposeDetails(tabId);
-    const cals = (await browser.terminCalendar.getCalendars()).filter(isWritable);
+    const cals = (await tvCalendar.getCalendars()).filter(isWritable);
     let defaultCalendarId = null;
     try {
       defaultCalendarId = await reserveCalendarId(cfg);
@@ -1017,7 +1056,7 @@ const handlers = {
   },
   computeSlots: req => computeSlots(req),
   applyProposal: req => applyProposal(req),
-  getCalendars: () => browser.terminCalendar.getCalendars(),
+  getCalendars: () => tvCalendar.getCalendars(),
   async listProposals() {
     const cfg = await tvLoadConfig();
     const all = await getProposals();

@@ -7,7 +7,7 @@ Erzeugt per Knopfdruck im Verfassen-Fenster Terminvorschläge aus den freien Zei
 1. **Button „Terminvorschläge“** in der Symbolleiste des Verfassen-Fensters öffnet ein Fenster mit
    Anzahl, Dauer, „frühestens ab“, Zeitraum und Kalendertitel. Die freien Termine werden sofort berechnet.
    Unpassende Vorschläge abwählen → **Neu berechnen** ersetzt sie.
-2. **Reservieren & einfügen** (Kalender für die Reservierungen im Popup wählbar, Vorgabe aus den Einstellungen, sonst Standardkalender)
+2. **Reservieren & einfügen** (Kalender für die Reservierungen im Popup wählbar, Vorgabe aus den Einstellungen, sonst der zuletzt verwendete Kalender)
    - Jeder Vorschlag wird als *vorläufiger* Termin („[Reserviert] Betreff“) im Kalender eingetragen.
    - In die Mail kommt an der Cursorposition (sonst vor Signatur/Zitat) eine Aufzählung im Format
      `Montag, 23.11.2026, 10:00 – 11:00 Uhr – Diesen Termin bestätigen`.
@@ -77,13 +77,17 @@ Danach läuft dieselbe Automatik.
 
 ## Technik
 
-- Manifest V3 MailExtension, Thunderbird ≥ 128 (getestet mit 160).
-- Thunderbird hat keine offizielle Kalender-API für Add-ons. Deshalb greift die Experiment-API
-  `api/terminCalendar` direkt auf den internen Kalender zu (lesen, anlegen, ändern, löschen).
+- Manifest V3 MailExtension, Thunderbird ≥ 128 (getestet mit 160 und 162.0b1).
+- Thunderbird hat noch keine fertige Kalender-API für Add-ons. Das Add-on nutzt deshalb den offiziellen
+  Entwurf der Kalender-API aus [thunderbird/webext-experiments](https://github.com/thunderbird/webext-experiments/tree/main/calendar)
+  (Ordner `addon/experiments/calendar`, unverändert übernommen). `addon/lib/calendar.js` setzt darauf auf
+  und wertet die Termine (jCal) aus.
   Experiment-Add-ons haben vollen Zugriff auf Thunderbird und können bei großen Thunderbird-Updates angepasst werden müssen.
+- Wird ein bestätigter Termin im Kalender gelöscht, merkt das Add-on das sofort, wenn sein Hintergrund gerade läuft,
+  spätestens aber bei der Prüfung alle 15 Minuten.
 - Reservierungen tragen die Eigenschaft `X-TERMINVORSCHLAG-ID` und blockieren damit immer weitere Vorschläge.
 - Zustand der Vorschläge: `browser.storage.local`.
-- Tests der Slot-Berechnung: `node test/slots.test.js`
+- Tests: `node test/slots.test.js` und `TZ=Europe/Berlin node test/calendar.test.js`
 
 ## Grenzen
 
