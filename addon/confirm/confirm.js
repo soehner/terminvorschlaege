@@ -84,6 +84,10 @@ async function init() {
     $("done").hidden = false;
     $("confirm").hidden = true;
     $("cancel").hidden = true;
+    if (cs && cs.end < Date.now()) {
+      $("title").textContent = "Termin hat stattgefunden";
+      return;
+    }
     $("withdraw").hidden = false;
     const cfgRes = await browser.storage.local.get("config");
     $("wdNew").checked = !(cfgRes.config && cfgRes.config.cancelNewProposals === false);

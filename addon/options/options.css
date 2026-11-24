@@ -20,6 +20,8 @@ th, td { text-align: left; border-bottom: 1px solid var(--border); padding: 6px;
 td ul { margin: 0; padding-left: 16px; }
 td li.gone { opacity: .5; text-decoration: line-through; }
 td li.chosen { font-weight: 600; }
+tr.past td { color: var(--muted, #888); }
+tr.past td li.chosen { font-weight: normal; }
 td button { padding: 3px 8px; font-size: 12px; margin: 0 4px 4px 0; }
 code { font-size: 12px; }
 dialog { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--fg); max-width: 460px; padding: 18px 20px; }

@@ -33,6 +33,9 @@ Erzeugt per Knopfdruck im Verfassen-Fenster Terminvorschläge aus den freien Zei
    sofort senden / nichts tun). Verschieben in einen anderen Kalender löst keine Absage aus, vergangene Termine ebenfalls nicht.
 7. **Aufräumen**: Stündlich werden vergangene Reservierungen gelöscht und Vorschläge nach X Tagen ohne Antwort verworfen.
    Unter *Einstellungen → Terminvorschläge* sieht man alle Vorschläge und kann sie manuell bestätigen oder stornieren.
+   Schneller geht es über den Knopf **„Terminvorschläge“ in der Werkzeugleiste des Hauptfensters**: Er öffnet direkt die Liste
+   (bzw. holt sie nach vorne, wenn sie schon offen ist). Bestätigte Termine, die schon vorbei sind, erscheinen grau als
+   „stattgefunden“ und lassen sich nicht mehr absagen, nur noch entfernen.
 
 ## Installation
 

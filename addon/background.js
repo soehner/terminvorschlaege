@@ -647,6 +647,9 @@ async function withdrawConfirmed(id, opt = {}) {
     throw new Error("Nur bestätigte Termine können abgesagt werden.");
   }
   const slot = p.slots.find(s => s.nr === p.confirmed.nr);
+  if (slot && slot.end < Date.now()) {
+    throw new Error("Der Termin hat bereits stattgefunden und kann nicht mehr abgesagt werden.");
+  }
   const attendee = p.confirmed.from;
   const mode = opt.mode || cfg.cancelSend;
 
@@ -1032,6 +1035,33 @@ browser.runtime.onInstalled.addListener(() => {
 });
 browser.runtime.onStartup.addListener(() => {
   browser.alarms.create("tv-maintenance", { periodInMinutes: 15, delayInMinutes: 2 });
+});
+
+// ------------------------------------------------------------------ Knopf im Hauptfenster: Liste öffnen
+async function openProposalList() {
+  const page = "options/options.html";
+  const view = browser.extension
+    .getViews({ type: "tab" })
+    .find(v => v.location.pathname.endsWith("/" + page));
+  if (view) {
+    // vorhandenen Tab nach vorne holen, Liste auffrischen und hinspringen
+    const tab = await view.browser.tabs.getCurrent();
+    await browser.tabs.update(tab.id, { active: true });
+    await browser.windows.update(tab.windowId, { focused: true }).catch(() => {});
+    if (typeof view.loadProposals === "function") {
+      await view.loadProposals();
+    }
+    const el = view.document.getElementById("vorschlaege");
+    if (el) {
+      el.scrollIntoView();
+    }
+    return;
+  }
+  await browser.tabs.create({ url: browser.runtime.getURL(page + "#vorschlaege") });
+}
+
+browser.action.onClicked.addListener(() => {
+  openProposalList().catch(e => console.error("Terminvorschläge:", e));
 });
 
 // ------------------------------------------------------------------ Nachrichten von Popup/Optionen

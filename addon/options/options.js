@@ -12,7 +12,14 @@ const STATUS_TEXT = {
   cancelled: "storniert",
   expired: "abgelaufen",
   withdrawn: "abgesagt",
+  done: "stattgefunden",
 };
+
+/** Bestätigter Termin, dessen Ende vorbei ist */
+function isPast(p) {
+  const s = p.status === "confirmed" && p.confirmed && p.slots.find(x => x.nr === p.confirmed.nr);
+  return !!s && s.end < Date.now();
+}
 
 /** Dialog „Termin absagen“ – liefert {reason, newProposals, mode} oder null */
 function askWithdraw(p, slotText) {
@@ -198,7 +205,11 @@ async function loadProposals() {
     return;
   }
   for (const p of list) {
+    const past = isPast(p);
     const tr = document.createElement("tr");
+    if (past) {
+      tr.className = "past";
+    }
     tb.append(tr);
     const td = text => {
       const c = document.createElement("td");
@@ -222,8 +233,8 @@ async function loadProposals() {
       ul.append(li);
     }
     cell.append(ul);
-    const st = td(STATUS_TEXT[p.status] || p.status);
-    if (p.confirmed && p.confirmed.videoUrl) {
+    const st = td(past ? STATUS_TEXT.done : STATUS_TEXT[p.status] || p.status);
+    if (p.confirmed && p.confirmed.videoUrl && !past) {
       const a = document.createElement("a");
       a.href = p.confirmed.videoUrl;
       a.textContent = " Video";
@@ -254,7 +265,7 @@ async function loadProposals() {
         loadProposals();
       });
       act.append(c);
-    } else if (p.status === "confirmed") {
+    } else if (p.status === "confirmed" && !past) {
       const slot = p.slots.find(x => x.nr === p.confirmed.nr);
       const w = document.createElement("button");
       w.className = "danger";
@@ -423,4 +434,14 @@ $("importFile").addEventListener("change", () => {
   }
 });
 
-init().catch(e => flash($("saveStatus"), e.message, "err"));
+init()
+  .then(() => {
+    // Aufruf über den Knopf im Hauptfenster: direkt zur Liste springen
+    if (location.hash) {
+      const el = document.querySelector(location.hash);
+      if (el) {
+        el.scrollIntoView();
+      }
+    }
+  })
+  .catch(e => flash($("saveStatus"), e.message, "err"));
