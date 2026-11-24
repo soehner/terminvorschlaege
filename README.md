@@ -31,7 +31,7 @@ Erzeugt per Knopfdruck im Verfassen-Fenster Terminvorschläge aus den freien Zei
    **Auch beim Löschen im Kalender:** Löscht man einen bestätigten Termin direkt im Kalender (auch auf einem anderen Gerät
    mit Abgleich), öffnet das Add-on nach ca. 8 Sekunden automatisch die Absage-Mail (einstellbar: zur Kontrolle öffnen /
    sofort senden / nichts tun). Verschieben in einen anderen Kalender löst keine Absage aus, vergangene Termine ebenfalls nicht.
-7. **Aufräumen**: Stündlich werden vergangene Reservierungen gelöscht und Vorschläge nach X Tagen ohne Antwort verworfen.
+7. **Aufräumen**: Alle 15 Minuten werden vergangene Reservierungen gelöscht und Vorschläge nach X Tagen ohne Antwort verworfen.
    Unter *Einstellungen → Terminvorschläge* sieht man alle Vorschläge und kann sie manuell bestätigen oder stornieren.
    Schneller geht es über den Knopf **„Terminvorschläge“ in der Werkzeugleiste des Hauptfensters**: Er öffnet direkt die Liste
    (bzw. holt sie nach vorne, wenn sie schon offen ist). Bestätigte Termine, die schon vorbei sind, erscheinen grau als
